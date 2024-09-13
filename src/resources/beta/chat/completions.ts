@@ -35,16 +35,13 @@ import {
 import { ExtractParsedContentFromParams, parseChatCompletion, validateInputTools } from '../../../lib/parser';
 export { ChatCompletionStream, type ChatCompletionStreamParams } from '../../../lib/ChatCompletionStream';
 
-export interface ParsedFunction extends ChatCompletionMessageToolCall.Function {
-  parsed_arguments?: unknown;
-}
+export interface ParsedFunction extends ChatCompletionMessageToolCall.Function {}
 
 export interface ParsedFunctionToolCall extends ChatCompletionMessageToolCall {
   function: ParsedFunction;
 }
 
 export interface ParsedChatCompletionMessage<ParsedT> extends ChatCompletionMessage {
-  parsed: ParsedT | null;
   tool_calls: Array<ParsedFunctionToolCall>;
 }
 

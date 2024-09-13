@@ -1551,6 +1551,7 @@ export namespace RunSubmitToolOutputsParams {
      * the output is being submitted for.
      */
     tool_call_id?: string;
+    name?: string;
   }
 
   export type RunSubmitToolOutputsParamsNonStreaming = RunsAPI.RunSubmitToolOutputsParamsNonStreaming;
@@ -1594,6 +1595,7 @@ export namespace RunSubmitToolOutputsAndPollParams {
      * the output is being submitted for.
      */
     tool_call_id?: string;
+    name?: string;
   }
 }
 
@@ -1616,6 +1618,7 @@ export namespace RunSubmitToolOutputsStreamParams {
      * the output is being submitted for.
      */
     tool_call_id?: string;
+    name?: string;
   }
 }
 

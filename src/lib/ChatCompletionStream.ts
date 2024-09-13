@@ -34,12 +34,10 @@ import { partialParse } from '../_vendor/partial-json-parser/parser';
 export interface ContentDeltaEvent {
   delta: string;
   snapshot: string;
-  parsed: unknown | null;
 }
 
 export interface ContentDoneEvent<ParsedT = null> {
   content: string;
-  parsed: ParsedT | null;
 }
 
 export interface RefusalDeltaEvent {
@@ -58,8 +56,6 @@ export interface FunctionToolCallArgumentsDeltaEvent {
 
   arguments: string;
 
-  parsed_arguments: unknown;
-
   arguments_delta: string;
 }
 
@@ -69,8 +65,6 @@ export interface FunctionToolCallArgumentsDoneEvent {
   index: number;
 
   arguments: string;
-
-  parsed_arguments: unknown;
 }
 
 export interface LogProbsContentDeltaEvent {
@@ -212,7 +206,6 @@ export class ChatCompletionStream<ParsedT = null>
         this._emit('content.delta', {
           delta: choice.delta.content,
           snapshot: choiceSnapshot.message.content,
-          parsed: choiceSnapshot.message.parsed,
         });
       }
 
@@ -275,7 +268,6 @@ export class ChatCompletionStream<ParsedT = null>
             name: toolCallSnapshot.function?.name,
             index: toolCallDelta.index,
             arguments: toolCallSnapshot.function.arguments,
-            parsed_arguments: toolCallSnapshot.function.parsed_arguments,
             arguments_delta: toolCallDelta.function?.arguments ?? '',
           });
         } else {
@@ -309,10 +301,6 @@ export class ChatCompletionStream<ParsedT = null>
         name: toolCallSnapshot.function.name,
         index: toolCallIndex,
         arguments: toolCallSnapshot.function.arguments,
-        parsed_arguments:
-          isAutoParsableTool(inputTool) ? inputTool.$parseRaw(toolCallSnapshot.function.arguments)
-          : inputTool?.function.strict ? JSON.parse(toolCallSnapshot.function.arguments)
-          : null,
       });
     } else {
       assertNever(toolCallSnapshot.type);
@@ -329,7 +317,6 @@ export class ChatCompletionStream<ParsedT = null>
 
       this._emit('content.done', {
         content: choiceSnapshot.message.content,
-        parsed: responseFormat ? responseFormat.$parseRaw(choiceSnapshot.message.content) : (null as any),
       });
     }
 
@@ -527,9 +514,6 @@ export class ChatCompletionStream<ParsedT = null>
           if (fn?.arguments) {
             tool_call.function!.arguments += fn.arguments;
 
-            if (shouldParseToolCall(this.#params, tool_call)) {
-              tool_call.function!.parsed_arguments = partialParse(tool_call.function!.arguments);
-            }
           }
         }
       }
@@ -825,7 +809,6 @@ export namespace ChatCompletionSnapshot {
            */
           arguments: string;
 
-          parsed_arguments?: unknown;
 
           /**
            * The name of the function to call.
